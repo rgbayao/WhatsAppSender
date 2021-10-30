@@ -1,3 +1,6 @@
 .venv/
 config.db
 chromedriver.*
+chromedriver
+**/__pycache__
+.idea

@@ -9,6 +9,7 @@ import time
 import datetime
 import urllib
 import traceback
+import os
 
 
 def get_ddi(i):
@@ -94,7 +95,13 @@ class Sender:
         return self.error
 
     def start_navigator(self):
-        self.navigator = webdriver.Chrome(executable_path="../../chromedriver.exe")
+        if os.path.exists("../../chromedriver.exe"):
+            self.navigator = webdriver.Chrome(executable_path="../../chromedriver.exe")
+        elif os.path.exists("../../chromedriver"):
+            self.navigator = webdriver.Chrome(executable_path="../../chromedriver.exe")
+        else:
+            raise FileNotFoundError("Can't find chromedriver in main.py folder")
+
         self.navigator.get("http://web.whatsapp.com/")
         while len(self.navigator.find_elements_by_id("side")) < 1:
             time.sleep(0.5)
@@ -110,7 +117,12 @@ class Sender:
             self.sent_all = True
             return
 
-        self.start_navigator()
+        try:
+            self.start_navigator()
+        except FileNotFoundError:
+            messagebox.showerror("Error", "O arquivo chromedriver não foi encontrado na pasta que se encontra main.py")
+            self.error = True
+            return
 
         self.send_messages()
 
