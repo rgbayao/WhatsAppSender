@@ -213,44 +213,48 @@ class Sender:
                 a = self.navigator.find_elements_by_id("side")
                 b = len(a)
             except UnexpectedAlertPresentException:
-                today = datetime.date.today()
-                with open("log_" + today.strftime("%d_%m_%y"), "a") as file:
-                    file.write(traceback.format_exc())
-                    file.write("\n")
+                self.write_log_error()
                 continue
             time.sleep(0.5)
 
     def send_prepared_message(self, index):
         try:
             time.sleep(5)
+            # XPath copied in Chrome: //*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[2]
+            # Substituted in order to match the class
             self.navigator.find_element_by_xpath(
-                '//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[2]').send_keys(
+                '//*[@id="main"]/footer//div[@class="_13NKt copyable-text selectable-text"]').send_keys(
                 Keys.ENTER)
             return True
         except NoSuchElementException:
             self.errors_index.append(index)
-            try:
-                today = datetime.date.today()
-                with open("erros_" + today.strftime("%d_%m_%y") + ".txt", "a") as file:
-                    complete_number = self.data_source.DDI[index] + self.data_source.DDD[index] \
-                                      + "9" + self.data_source.NUM[index]
-                    file.write(f"{index} - Falha ao enviar para número: {complete_number} | dados: \n" +
-                               str(self.data_source.data.loc[index]))
-                    file.write("\n")
-                    file.write("Texto: \n" + self.text + "\n")
-                    file.write("Link: " + self.link + "\n")
-
-            except IOError:
-                pass
-            except Exception as e:
-                today = datetime.date.today()
-                with open("log_" + today.strftime("%d_%m_%y"), "a") as file:
-                    file.write(traceback.format_exc())
-                    file.write("\n")
+            self.write_send_error(index)
         except Exception as e:
             self.errors_index.append(index)
+            self.write_log_error()
+        return False
+
+    def write_send_error(self, index):
+        try:
+            today = datetime.date.today()
+            with open("erros_" + today.strftime("%d_%m_%y") + ".txt", "a") as file:
+                complete_number = self.data_source.DDI[index] + self.data_source.DDD[index] \
+                                  + "9" + self.data_source.NUM[index]
+                file.write(f"{index} - Falha ao enviar para número: {complete_number} | dados: \n" +
+                           str(self.data_source.data.loc[index]))
+                file.write("Texto: \n" + self.text + "\n")
+                file.write("Link:\n" + self.link + "\n\n")
+        except IOError:
+            pass
+        except Exception as e:
             today = datetime.date.today()
             with open("log_" + today.strftime("%d_%m_%y"), "a") as file:
                 file.write(traceback.format_exc())
-                file.write("\n")
-        return False
+                file.write("\n\n")
+
+    def write_log_error(self):
+        today = datetime.date.today()
+        with open("log_" + today.strftime("%d_%m_%y"), "a") as file:
+            file.write(traceback.format_exc())
+            file.write("\n")
+
