@@ -95,10 +95,10 @@ class Sender:
         return self.error
 
     def start_navigator(self):
-        if os.path.exists("../../chromedriver.exe"):
-            self.navigator = webdriver.Chrome(executable_path="../../chromedriver.exe")
+        if os.path.exists("chromedriver.exe"):
+            self.navigator = webdriver.Chrome(executable_path="chromedriver.exe")
         elif os.path.exists("../../chromedriver"):
-            self.navigator = webdriver.Chrome(executable_path="../../chromedriver.exe")
+            self.navigator = webdriver.Chrome(executable_path="chromedriver")
         else:
             raise FileNotFoundError("Can't find chromedriver in main.py folder")
 
@@ -224,7 +224,7 @@ class Sender:
         try:
             time.sleep(5)
             self.navigator.find_element_by_xpath(
-                '//*[@id="main"]/footer/div[1]/div/div/div[2]/div[1]/div/div[2]').send_keys(
+                '//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[2]').send_keys(
                 Keys.ENTER)
             return True
         except NoSuchElementException:
