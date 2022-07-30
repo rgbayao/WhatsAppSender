@@ -223,7 +223,7 @@ class Sender:
             # XPath copied in Chrome: //*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[2]
             # Substituted in order to match the class
             self.navigator.find_element_by_xpath(
-                '//*[@id="main"]/footer//div[@class="_13NKt copyable-text selectable-text"]').send_keys(
+                '//*[@id="main"]/footer//div[@class="fd365im1 to2l77zo bbv8nyr4 mwp4sxku gfz4du6o ag5g9lrv"]').send_keys(
                 Keys.ENTER)
             return True
         except NoSuchElementException:
