@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import UnexpectedAlertPresentException
+from selenium.webdriver.common.by import By
 import time
 import datetime
 import urllib
@@ -103,7 +104,8 @@ class Sender:
             raise FileNotFoundError("Can't find chromedriver in main.py folder")
 
         self.navigator.get("http://web.whatsapp.com/")
-        while len(self.navigator.find_elements_by_id("side")) < 1:
+        #while len(self.navigator.find_elements_by_id("side")) < 1:
+        while len(self.navigator.find_elements(By.ID, "side")) < 1:
             time.sleep(0.5)
 
     def prepare_and_send_all(self):
@@ -210,7 +212,8 @@ class Sender:
         b = 0
         while b < 1:
             try:
-                a = self.navigator.find_elements_by_id("side")
+                # a = self.navigator.find_elements_by_id("side")
+                a = self.navigator.find_elements(By.ID, "side")
                 b = len(a)
             except UnexpectedAlertPresentException:
                 self.write_log_error()
@@ -220,10 +223,8 @@ class Sender:
     def send_prepared_message(self, index):
         try:
             time.sleep(5)
-            # XPath copied in Chrome: //*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div[2]
-            # Substituted in order to match the class
-            self.navigator.find_element_by_xpath(
-                '//*[@id="main"]/footer//div[@class="_13NKt copyable-text selectable-text"]').send_keys(
+            self.navigator.find_element(By.XPATH,
+                '//*[@id="main"]/footer//div[@class="fd365im1 to2l77zo bbv8nyr4 mwp4sxku gfz4du6o ag5g9lrv bze30y65 bdf91cm1"]').send_keys(
                 Keys.ENTER)
             return True
         except NoSuchElementException:
