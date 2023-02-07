@@ -224,7 +224,7 @@ class Sender:
         try:
             time.sleep(5)
             self.navigator.find_element(By.XPATH,
-                '//*[@id="main"]/footer//div[@class="fd365im1 to2l77zo bbv8nyr4 mwp4sxku gfz4du6o ag5g9lrv bze30y65 bdf91cm1"]').send_keys(
+                '//*[@id="main"]/footer//div[@class="fd365im1 to2l77zo bbv8nyr4 gfz4du6o ag5g9lrv bze30y65 bdf91cm1 mwp4sxku"]').send_keys(
                 Keys.ENTER)
             return True
         except NoSuchElementException:
