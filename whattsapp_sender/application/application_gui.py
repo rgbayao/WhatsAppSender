@@ -7,7 +7,7 @@ import whattsapp_sender.application.application_commands as comm
 from whattsapp_sender.tools.sql_manipulator import ExistingTemplate
 from whattsapp_sender.tools.sql_manipulator import PRIMARY_COL
 
-VERSION = "1.0.5"
+VERSION = "1.1.0"
 
 COL_TAG_PATTERN = "(?<={).[^}|{]*(?=})"
 

@@ -88,6 +88,12 @@ class Sender:
         self.navigator = None
         self.link = ""
         self.text = ""
+        self.first_try=True
+
+        self.html_class_name_file_path = 'html_class_name_wpp'
+        self.html_class_name = None
+
+        self.end_run = False
 
     def has_finished(self):
         return self.sent_all
@@ -179,6 +185,9 @@ class Sender:
 
             self.send_prepared_message(index)
 
+            if self.end_run:
+                return
+
             time.sleep(self.sleeping_time)
 
         self._num_of_tries += 1
@@ -223,8 +232,10 @@ class Sender:
     def send_prepared_message(self, index):
         try:
             time.sleep(5)
+            if self.first_try:
+                self.handle_html_class()
             self.navigator.find_element(By.XPATH,
-                '//*[@id="main"]/footer//div[@class="fd365im1 to2l77zo bbv8nyr4 gfz4du6o ag5g9lrv bze30y65 bdf91cm1 mwp4sxku"]').send_keys(
+                f'//*[@id="main"]/footer//div[@class="{self.html_class_name}"]').send_keys(
                 Keys.ENTER)
             return True
         except NoSuchElementException:
@@ -259,3 +270,43 @@ class Sender:
             file.write(traceback.format_exc())
             file.write("\n")
 
+    def handle_html_class(self):
+        with open(self.html_class_name_file_path, 'r', encoding='utf-8') as f:
+            txt = f.readlines()
+        txt = [i.replace("\n","") for i in txt]
+        self.html_class_name = txt[-1]
+        is_same_name = re.search(self.html_class_name, self.navigator.page_source)
+        if is_same_name is None:
+            self.manage_html_class_name()
+            
+
+    def manage_html_class_name(self):
+        html = self.navigator.page_source
+        html_class_name_splited = self.html_class_name.split(' ')
+        test_strings = self.html_class_name.split(' ')
+        success = False
+
+        while len(test_strings) > 3:
+            match_group = '(?<=class=")[^"]*(' + ')[^"]*('.join(["|".join(html_class_name_splited) for i in test_strings]) + ')[^"]*(?=")'
+            matches = re.findall(match_group, html)
+            if len(matches)==1:
+                success = True
+                break
+            elif len(matches)>1:
+                break
+            else:
+                test_strings.pop()
+        if success:
+            match_string = '(?<=class=")[^"]*' + '[^"]*'.join(matches[0]) + '[^"]*(?=")'
+            new_match = re.search(match_string, html)
+            self.html_class_name = new_match[0]
+            self.save_new_class_name()
+            
+        else:
+            messagebox.showerror("Error", "Código 42: Tente fechar o programa e rodar novamente. Se o erro persistir contate o fornecedor para manutenção.\
+                                            Lembre-se de informar o código do erro.")
+
+    def save_new_class_name(self):
+        with open(self.html_class_name_file_path, 'a') as f:
+            f.write('\n' + self.html_class_name)
+            
