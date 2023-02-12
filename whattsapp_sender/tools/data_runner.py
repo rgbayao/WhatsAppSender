@@ -307,6 +307,6 @@ class Sender:
                                             Lembre-se de informar o código do erro.")
 
     def save_new_class_name(self):
-        with open(self.html_class_name_file_path, 'a') as f:
+        with open(self.html_class_name_file_path, 'a', encoding='utf-8') as f:
             f.write('\n' + self.html_class_name)
             
