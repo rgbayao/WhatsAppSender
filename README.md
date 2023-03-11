@@ -9,7 +9,7 @@ Observação: Necessita o uso de um chromedriver compatível com sua máquina e 
 
 ## Observações
 - Necessita o uso de um chromedriver compatível com sua máquina e versão do chrome.
-- O chromedriver deve ser alocado na mesma pasta que o main.py
+- O chromedriver deve ser alocado num folder '.config' dentro da pasta que se encontra o main.py
 - Acesse https://chromedriver.chromium.org/downloads para baixar um compatível.
 
 ## Distribuição

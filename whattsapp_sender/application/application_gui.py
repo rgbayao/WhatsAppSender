@@ -390,7 +390,7 @@ class ConfigurationsMenu:
 
 
 class Application(Frame):
-    def __init__(self, master=None, db=None):
+    def __init__(self, master=None, db=None, base_path=None):
         super().__init__(master, width=450)
         self.master = master
         self.master.title("Mensagens autom. WhattsApp - Versão: " + VERSION)
@@ -403,6 +403,9 @@ class Application(Frame):
         self.pack_widgets()
         self.sender = Sender(None, self.active_template)
         self.data = DataSource(None)
+        if base_path is not None:
+            Sender.base_path = base_path
+            DataSource.base_path = base_path
 
     def get_templates(self):
         templates_names = self.db.get_template_names()
@@ -458,7 +461,14 @@ class Application(Frame):
 
         comm.run_progress_bar(self.barFileReading, self.get_data, self.reading_status, )
 
-        self.data = comm.get_data(self.active_template.cols)
+        data = comm.read_table()
+
+        if data is None:
+            self.data = DataSource(None)
+        else:
+            self.data = DataSource(comm.prepare_data_cols(data, self.active_template.cols))
+
+        # self.data = comm.get_data(self.active_template.cols)
 
         if not self.data.error and self.data.error is not None:
             self.btnSendMessages["state"] = "active"

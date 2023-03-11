@@ -74,12 +74,12 @@ def prepare_data_cols(data, target_cols):
     replace_columns_with_target_names(data, target_cols)
     return data
 
-
-def get_data(target_cols):
-    data = read_table()
-    if data is None:
-        return DataSource(None)
-    return DataSource(prepare_data_cols(data, target_cols))
+# Coded directly in application GUI to simplify base_path handling
+# def get_data(target_cols):
+#     data = read_table()
+#     if data is None:
+#         return DataSource(None)
+#     return DataSource(prepare_data_cols(data, target_cols))
 
 
 def move_bar(bar, subject):

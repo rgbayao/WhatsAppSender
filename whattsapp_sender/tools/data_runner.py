@@ -39,6 +39,7 @@ def get_cellphone_without_extra_9(number):
 
 
 class DataSource(object):
+    base_path = '.'
     def __init__(self, data):
         if data is None:
             self.error = None
@@ -71,6 +72,7 @@ class DataSource(object):
 
 
 class Sender:
+    base_path = '.'
     def __init__(self, data, template):
         self.data_source = data
         self.cols = template.cols
@@ -102,8 +104,8 @@ class Sender:
         return self.error
 
     def start_navigator(self):
-        if os.path.exists("chromedriver.exe"):
-            self.navigator = webdriver.Chrome(executable_path="chromedriver.exe")
+        if os.path.exists(os.path.join(Sender.base_path, "chromedriver.exe")):
+            self.navigator = webdriver.Chrome(executable_path=os.path.join(Sender.base_path, "chromedriver.exe"))
         elif os.path.exists("../../chromedriver"):
             self.navigator = webdriver.Chrome(executable_path="chromedriver")
         else:
@@ -193,13 +195,13 @@ class Sender:
         self._num_of_tries += 1
         if len(self.errors_index) > 0:
             today = datetime.date.today()
-            with open("erros_" + today.strftime("%d_%m_%y") + ".txt", "a") as file:
+            with open(os.path.join(Sender.base_path, "erros_" + today.strftime("%d_%m_%y") + ".txt"), "a") as file:
                 file.write(f"\nFIM DA TENTATIVA {self._num_of_tries} - TOTAL DE ERRORS = {len(self.errors_index)}")
                 file.write("\n\n")
 
             print(self.errors_index)
             if self.num_of_tries > self._num_of_tries:
-                with open("erros_" + today.strftime("%d_%m_%y") + ".txt", "a") as file:
+                with open(os.path.join(Sender.base_path, "erros_" + today.strftime("%d_%m_%y") + ".txt"), "a") as file:
                     file.write(f"COMEÇANDO TENTATIVA {self._num_of_tries + 1}")
                     file.write("\n")
                 self.send_messages(index=self.errors_index)
@@ -249,7 +251,7 @@ class Sender:
     def write_send_error(self, index):
         try:
             today = datetime.date.today()
-            with open("erros_" + today.strftime("%d_%m_%y") + ".txt", "a") as file:
+            with open(os.path.join(Sender.base_path, "erros_" + today.strftime("%d_%m_%y") + ".txt"), "a") as file:
                 complete_number = self.data_source.DDI[index] + self.data_source.DDD[index] \
                                   + "9" + self.data_source.NUM[index]
                 file.write(f"{index} - Falha ao enviar para número: {complete_number} | dados: \n" +
@@ -260,18 +262,18 @@ class Sender:
             pass
         except Exception as e:
             today = datetime.date.today()
-            with open("log_" + today.strftime("%d_%m_%y"), "a") as file:
+            with open(os.path.join(Sender.base_path, "log_" + today.strftime("%d_%m_%y")), "a") as file:
                 file.write(traceback.format_exc())
                 file.write("\n\n")
 
     def write_log_error(self):
         today = datetime.date.today()
-        with open("log_" + today.strftime("%d_%m_%y"), "a") as file:
+        with open(os.path.join(Sender.base_path, "log_" + today.strftime("%d_%m_%y")), "a") as file:
             file.write(traceback.format_exc())
             file.write("\n")
 
     def handle_html_class(self):
-        with open(self.html_class_name_file_path, 'r', encoding='utf-8') as f:
+        with open(os.path.join(Sender.base_path, self.html_class_name_file_path), 'r', encoding='utf-8') as f:
             txt = f.readlines()
         txt = [i.replace("\n","") for i in txt]
         self.html_class_name = txt[-1]
@@ -307,6 +309,6 @@ class Sender:
                                             Lembre-se de informar o código do erro.")
 
     def save_new_class_name(self):
-        with open(self.html_class_name_file_path, 'a', encoding='utf-8') as f:
+        with open(os.path.join(Sender.base_path, self.html_class_name_file_path), 'a', encoding='utf-8') as f:
             f.write('\n' + self.html_class_name)
             
