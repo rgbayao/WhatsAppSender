@@ -109,7 +109,7 @@ class Sender:
         elif os.path.exists("../../chromedriver"):
             self.navigator = webdriver.Chrome(executable_path="chromedriver")
         else:
-            raise FileNotFoundError("Can't find chromedriver in main.py folder")
+            raise FileNotFoundError("Can't find chromedriver in ./configs/ folder")
 
         self.navigator.get("http://web.whatsapp.com/")
         #while len(self.navigator.find_elements_by_id("side")) < 1:
@@ -130,7 +130,7 @@ class Sender:
         try:
             self.start_navigator()
         except FileNotFoundError:
-            messagebox.showerror("Error", "O arquivo chromedriver não foi encontrado na pasta que se encontra main.py")
+            messagebox.showerror("Error", "O arquivo chromedriver não foi encontrado na pasta ./.configs/")
             self.error = True
             return
 
@@ -233,9 +233,23 @@ class Sender:
 
     def send_prepared_message(self, index):
         try:
-            time.sleep(5)
             if self.first_try:
                 self.handle_html_class()
+
+            b = 0
+            while b < 1:
+                try:
+                    a = self.navigator.find_element(By.XPATH,
+                            f'//*[@id="main"]/footer//div[@class="{self.html_class_name}"]')
+                    b=1
+                except NoSuchElementException:
+                    time.sleep(0.5)
+                    continue
+                except UnexpectedAlertPresentException:
+                    self.write_log_error()
+                    continue
+                time.sleep(0.5)
+
             self.navigator.find_element(By.XPATH,
                 f'//*[@id="main"]/footer//div[@class="{self.html_class_name}"]').send_keys(
                 Keys.ENTER)
@@ -273,17 +287,37 @@ class Sender:
             file.write("\n")
 
     def handle_html_class(self):
+        has_footer = -1
+        while has_footer == -1:
+            try:
+                html_txt = self.navigator.page_source
+                has_footer = html_txt.find('<footer')
+            except Exception:
+                self.write_log_error()
+                continue
+            time.sleep(0.5)
+
+
         with open(os.path.join(Sender.base_path, self.html_class_name_file_path), 'r', encoding='utf-8') as f:
             txt = f.readlines()
         txt = [i.replace("\n","") for i in txt]
         self.html_class_name = txt[-1]
-        is_same_name = re.search(self.html_class_name, self.navigator.page_source)
+
+        footer_idx = self.navigator.page_source.find('<footer')
+        footer_txt = self.navigator.page_source[footer_idx:]
+
+        is_same_name = re.search(self.html_class_name, footer_txt)
         if is_same_name is None:
-            self.manage_html_class_name()
+            self.manage_html_class_name(html_section = footer_txt)
+        # self.first_try = False
             
 
-    def manage_html_class_name(self):
-        html = self.navigator.page_source
+    def manage_html_class_name(self, html_section = None):
+        if html_section is None:
+            html = self.navigator.page_source
+        else:
+            html = html_section
+        
         html_class_name_splited = self.html_class_name.split(' ')
         test_strings = self.html_class_name.split(' ')
         success = False
