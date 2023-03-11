@@ -4,3 +4,14 @@ chromedriver.*
 chromedriver
 **/__pycache__
 .idea
+**ipynb
+**.pdf
+**.docx
+**.txt
+log_**
+**.xlsx
+**.xls
+**.spec
+**.exe
+**.zip
+**.manifest
